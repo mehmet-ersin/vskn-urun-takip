@@ -19,10 +19,11 @@
 2. **İstatistik Kartları Tıklanabilir** — Red/Uygunsuz, Uygun Kayıt, Toplam Kayıt sayılarına tıklandığında ilgili kayıtlar filtreleniyor
 3. **Sadece Ülke Sorgulama** — Ürün adı zorunlu olmaktan çıktı, sadece ülke yazarak da sorgulama yapılabiliyor
 4. **Mevzuat Butonu** — Header'da "📜 Mevzuat" butonu eklendi, https://vskn.tarimorman.gov.tr/pendik/Link/29/Mevzuat adresine yeni sekmede açılıyor
-5. **Türk Bayrağı** — "🐾 VSKN" yazısı kaldırıldı, yerine şık SVG Türk bayrağı eklendi
+5. **Türk Bayrağı ve Atatürk Görseli** — "bayrak ve atatürk.png" görseli header'a eklendi
 6. **Mobil İyileştirmeler** — Mobil ve küçük ekranlar için daha uyumlu tasarım (480px ve 768px breakpoint'leri)
 7. **API:** `/api/son-guncelleme` — Son güncelleme tarihi ve toplam kayıt sayısını döndürüyor
+8. **GitHub'a pushlandı** — Tüm değişiklikler gönderildi
+9. **Render'da canlı** — https://vskn-urun-takipp.onrender.com
 
 ## 🚀 Local'de Çalıştırma
-
 
