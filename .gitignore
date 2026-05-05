@@ -6,4 +6,5 @@ venv/
 .venv/
 assets/
 deepseek_text_*.txt
+CHECKPOINT.md
 Ekran Goruntusu_*
