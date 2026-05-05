@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İskenderun Limanı VSKN - Ürün Takip Sistemi</title>
+    <style>
+        :root {
+            --primary: #1a2a4a;
+            --primary-light: #2c4a7a;
+            --primary-dark: #0f1a2e;
+            --accent: #d4a843;
+            --success: #27ae60;
+            --success-bg: #e8f8f0;
+            --danger: #e74c3c;
+            --danger-bg: #fdecea;
+            --warning: #f39c12;
+            --warning-bg: #fef9e7;
+            --info: #3498db;
+            --info-bg: #eaf2f8;
+            --gray-50: #f8f9fa;
+            --gray-100: #e9ecef;
+            --gray-200: #dee2e6;
+            --gray-300: #ced4da;
+            --gray-500: #6c757d;
+            --gray-700: #495057;
+            --gray-900: #212529;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: var(--gray-900);
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            box-shadow: 0 4px 20px rgba(26, 42, 74, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .header-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .header-text { flex: 1; min-width: 200px; }
+        .header-text h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: 0.5px; line-height: 1.3; }
+        .header-text .subtitle { font-size: 0.85rem; opacity: 0.85; margin-top: 0.2rem; font-weight: 300; }
+        .header-flag {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-shrink: 0;
+        }
+        .btn-mevzuat {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.25);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-mevzuat:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-1px);
+        }
+        .header-guncelleme {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0.4rem 0;
+            font-size: 0.75rem;
+            opacity: 0.75;
+            text-align: right;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .form-card {
+            background: white; border-radius: var(--radius); padding: 2rem;
+            box-shadow: var(--shadow-lg); margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.8);
+        }
+        .form-card h2 {
+            color: var(--primary); font-size: 1.3rem; margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .form-card h2::after {
+            content: ''; flex: 1; height: 2px;
+            background: linear-gradient(to right, var(--primary), transparent); margin-left: 1rem;
+        }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label {
+            font-size: 0.8rem; font-weight: 600; color: var(--gray-700);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .form-group input, .form-group select {
+            padding: 0.75rem 1rem; border: 2px solid var(--gray-200);
+            border-radius: var(--radius-sm); font-size: 0.95rem;
+            transition: var(--transition); background: var(--gray-50); outline: none; font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(44,74,122,0.1); background: white;
+        }
+        .form-group input::placeholder { color: var(--gray-500); }
+        .btn-sorgula {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white; border: none; padding: 0.85rem 2.5rem;
+            border-radius: var(--radius-sm); font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: var(--transition); display: inline-flex;
+            align-items: center; gap: 0.5rem; letter-spacing: 0.5px; margin-top: 0.6rem;
+        }
+        .btn-sorgula:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(26,42,74,0.3); }
+        .btn-sorgula:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-sorgula .spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        .btn-sorgula.loading .spinner { display: inline-block; }
+        .btn-sorgula.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .form-actions { display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem; }
+        .btn-temizle {
+            background: var(--gray-100); color: var(--gray-700);
+            border: 2px solid var(--gray-200); padding: 0.85rem 1.5rem;
+            border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 500;
+            cursor: pointer; transition: var(--transition);
+        }
+        .btn-temizle:hover { background: var(--gray-200); }
+        .loading-overlay { display: none; text-align: center; padding: 3rem; }
+        .loading-overlay.active { display: block; }
+        .loading-spinner { width: 48px; height: 48px; border: 4px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+        .hata-mesaji {
+            background: var(--danger-bg); color: var(--danger); padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm); margin-bottom: 1rem; border: 1px solid rgba(231,76,60,0.2);
+            display: none; font-weight: 500;
+        }
+        .hata-mesaji.active { display: block; }
+
+        /* İSTATİSTİK KARTLARI */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 1px solid var(--gray-100);
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        .stat-card.clickable-red:hover { border-color: var(--danger); }
+        .stat-card.clickable-green:hover { border-color: var(--success); }
+        .stat-card.clickable-blue:hover { border-color: var(--primary); }
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .stat-card .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.3rem;
+        }
+        .stat-card.danger .stat-value { color: var(--danger); }
+        .stat-card.success .stat-value { color: var(--success); }
+        .stat-card.warning .stat-value { color: var(--warning); }
+        .stat-card.no-click {
+            cursor: default;
+        }
+        .stat-card.no-click:hover {
+            transform: none;
+            box-shadow: var(--shadow);
+        }
+
+        /* SONUÇ TABLOSU */
+        .sonuc-container { display: none; animation: slideUp 0.5s ease; }
+        .sonuc-container.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .sonuc-header {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;
+        }
+        .sonuc-header h2 { color: var(--primary); font-size: 1.2rem; }
+        .sonuc-badge {
+            background: var(--primary); color: white;
+            padding: 0.4rem 1rem; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .sonuc-badge.danger { background: var(--danger); }
+        .sonuc-badge.success { background: var(--success); }
+        .sonuc-badge.warning { background: var(--warning); }
+        .sonuc-tablo-wrapper {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--gray-100);
+        }
+        .sonuc-tablo {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .sonuc-tablo thead {
+            background: var(--primary);
+            color: white;
+        }
+        .sonuc-tablo th {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        .sonuc-tablo th:hover { background: rgba(255,255,255,0.1); }
+        .sonuc-tablo td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--gray-100);
+            vertical-align: top;
+        }
+        .sonuc-tablo tbody tr:hover { background: var(--gray-50); }
+        .sonuc-tablo tbody tr.red { background: var(--danger-bg); }
+        .sonuc-tablo tbody tr.red:hover { background: #fcd5d0; }
+        .sonuc-tablo tbody tr.uygun { background: var(--success-bg); }
+        .sonuc-tablo tbody tr.uygun:hover { background: #d5f5e3; }
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .tag-red { background: var(--danger-bg); color: var(--danger); }
+        .tag-yesil { background: var(--success-bg); color: var(--success); }
+        .tag-mavi { background: var(--info-bg); color: var(--info); }
+        .tag-sari { background: var(--warning-bg); color: var(--warning); }
+        .kategori-badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        .sonuc-ozet {
+            padding: 1rem 1.5rem;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .sonuc-ozet span { display: flex; align-items: center; gap: 0.3rem; }
+        .tablo-footer {
+            padding: 0.8rem 1.5rem;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-100);
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .bos-sonuc {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+        }
+        .bos-sonuc .bos-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+        .bos-sonuc p { font-size: 1rem; }
+        .sirala-gostergesi { font-size: 0.7rem; margin-left: 0.3rem; opacity: 0.7; }
+        .footer { text-align: center; padding: 2rem; color: var(--gray-500); font-size: 0.8rem; }
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .header-content { gap: 0.8rem; }
+            .header-logo { width: 45px; height: 45px; }
+            .header-text h1 { font-size: 1rem; }
+            .header-text .subtitle { font-size: 0.75rem; }
+            .header-badge, .header-flag { display: none; }
+            .header-guncelleme { font-size: 0.65rem; text-align: center; }
+            .btn-mevzuat { padding: 0.4rem 0.8rem; font-size: 0.7rem; }
+            .container { padding: 1rem; }
+            .form-card { padding: 1.2rem; }
+            .form-card h2 { font-size: 1.1rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-actions { flex-direction: column; }
+            .btn-sorgula, .btn-temizle { width: 100%; justify-content: center; }
+            .sonuc-tablo { font-size: 0.7rem; }
+            .sonuc-tablo th, .sonuc-tablo td { padding: 0.4rem 0.5rem; }
+            .sonuc-tablo th { font-size: 0.65rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
+            .stat-card { padding: 0.9rem; }
+            .stat-card .stat-value { font-size: 1.5rem; }
+            .stat-card .stat-label { font-size: 0.65rem; }
+            .sonuc-ozet { font-size: 0.8rem; padding: 0.8rem 1rem; }
+            .sonuc-header h2 { font-size: 1rem; }
+            .sonuc-badge { font-size: 0.7rem; padding: 0.3rem 0.7rem; }
+            .tag { font-size: 0.6rem; padding: 0.15rem 0.4rem; }
+            .kategori-badge { font-size: 0.55rem; }
+            .tablo-footer { font-size: 0.7rem; padding: 0.6rem 1rem; }
+        }
+        @media (max-width: 480px) {
+            .header-content { flex-wrap: wrap; justify-content: center; text-align: center; }
+            .header-logo { width: 40px; height: 40px; }
+            .header-text { min-width: 100%; text-align: center; }
+            .header-text h1 { font-size: 0.85rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+            .stat-card { padding: 0.7rem; }
+            .stat-card .stat-value { font-size: 1.3rem; }
+            .sonuc-tablo { font-size: 0.65rem; }
+            .sonuc-tablo th, .sonuc-tablo td { padding: 0.3rem; }
+            .sonuc-tablo th { font-size: 0.55rem; }
+            .container { padding: 0.7rem; }
+            .form-card { padding: 0.9rem; }
+            .btn-mevzuat { font-size: 0.65rem; padding: 0.3rem 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-logo"><img src="logo1.png" alt="VSKN Logo" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+            <div class="header-text">
+                <h1>İskenderun Limanı Veteriner Sınır Kontrol Noktası Müdürlüğü</h1>
+                <div class="subtitle">Uygunsuzluk ve Geri Dönen Ürün Takip Sistemi</div>
+            </div>
+            <div class="header-actions">
+                <a href="https://vskn.tarimorman.gov.tr/pendik/Link/29/Mevzuat" target="_blank" class="btn-mevzuat">📜 Mevzuat</a>
+                <div class="header-flag" title="T.C. Tarım ve Orman Bakanlığı">
+                    <img src="bayrak-ve-ataturk.png" alt="Türk Bayrağı ve Atatürk" style="height:45px; width:auto; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                </div>
+            </div>
+        </div>
+        <div class="header-guncelleme" id="headerGuncelleme">📅 Son güncelleme: yükleniyor...</div>
+    </header>
+    <div class="container">
+        <div class="form-card">
+            <h2>📋 Ürün Sorgulama</h2>
+            <form id="sorguForm" autocomplete="off">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="urunAdi">Ürün Adı</label>
+                        <input type="text" id="urunAdi" placeholder="Örn: DONDURULMUŞ TAVUK ETİ">
+                    </div>
+                    <div class="form-group">
+                        <label for="menseiUlke">Menşei Ülke</label>
+                        <input type="text" id="menseiUlke" placeholder="Örn: BREZİLYA">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-sorgula" id="btnSorgula">
+                        <span class="btn-text">🔍 Sorgula</span>
+                        <span class="spinner"></span>
+                    </button>
+                    <button type="button" class="btn-temizle" id="btnTemizle">🔄 Temizle</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="hata-mesaji" id="hataMesaji"></div>
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <p style="color: var(--gray-500);">Veritabanı taranıyor...</p>
+        </div>
+
+        <div class="sonuc-container" id="sonucContainer">
+            <!-- İstatistikler -->
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <!-- Sonuç Tablosu -->
+            <div class="sonuc-header">
+                <h2 id="sonucBaslik">📦 Sorgu Sonuçları</h2>
+                <div class="sonuc-badge" id="sonucBadge">0 kayıt</div>
+            </div>
+            <div class="sonuc-tablo-wrapper">
+                <div class="sonuc-ozet" id="sonucOzet"></div>
+                <div class="tablo-scroll" style="overflow-x:auto;">
+                    <table class="sonuc-tablo" id="sonucTablo">
+                        <thead>
+                            <tr>
+                                <th data-sort="urun">Ürün Adı <span class="sirala-gostergesi">⇅</span></th>
+                                <th data-sort="tarih">Tarih <span class="sirala-gostergesi">⇅</span></th>
+                                <th data-sort="sebep">Uygunsuzluk Sebebi <span class="sirala-gostergesi">⇅</span></th>
+                                <th data-sort="karar">Karar <span class="sirala-gostergesi">⇅</span></th>
+                                <th data-sort="ulke">Ülke <span class="sirala-gostergesi">⇅</span></th>
+                                <th data-sort="kurum">Bildiren Kurum <span class="sirala-gostergesi">⇅</span></th>
+                                <th data-sort="kategori">Kategori <span class="sirala-gostergesi">⇅</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabloGovdesi"></tbody>
+                    </table>
+                </div>
+                <div class="tablo-footer">
+                    <span id="tabloBilgi">Yükleniyor...</span>
+                    <span id="sayfaBilgi"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">© 2024 İskenderun Limanı Veteriner Sınır Kontrol Noktası Müdürlüğü</div>
+
+    <script>
+        const form = document.getElementById('sorguForm');
+        const btnSorgula = document.getElementById('btnSorgula');
+        const btnTemizle = document.getElementById('btnTemizle');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const sonucContainer = document.getElementById('sonucContainer');
+        const hataMesaji = document.getElementById('hataMesaji');
+        const tabloGovdesi = document.getElementById('tabloGovdesi');
+        const sonucBaslik = document.getElementById('sonucBaslik');
+        const sonucBadge = document.getElementById('sonucBadge');
+        const sonucOzet = document.getElementById('sonucOzet');
+        const statsGrid = document.getElementById('statsGrid');
+        const tabloBilgi = document.getElementById('tabloBilgi');
+
+        let mevcutKayitlar = [];
+        let siraliKayitlar = [];
+        let siralaAlani = null;
+        let siralaTersi = false;
+        let gorunenSayfa = 1;
+        let aktifFiltre = null; // 'red', 'uygun', 'tum'
+        const SAYFA_BOYUTU = 50;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const urun = document.getElementById('urunAdi').value.trim().toUpperCase();
+            const ulke = document.getElementById('menseiUlke').value.trim().toUpperCase();
+            if (!urun && !ulke) {
+                showError('Lütfen ürün adı veya menşei ülke girin.');
+                return;
+            }
+            await sorgula({ urun_adi: urun, mensei_ulke: ulke });
+        });
+
+        btnTemizle.addEventListener('click', () => {
+            form.reset();
+            sonucContainer.classList.remove('active');
+            hataMesaji.classList.remove('active');
+            mevcutKayitlar = [];
+            siraliKayitlar = [];
+            aktifFiltre = null;
+        });
+
+        async function sorgula(data) {
+            btnSorgula.classList.add('loading');
+            btnSorgula.disabled = true;
+            loadingOverlay.classList.add('active');
+            sonucContainer.classList.remove('active');
+            hataMesaji.classList.remove('active');
+
+            try {
+                const res = await fetch('/api/sorgula', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.hata || 'Sunucu hatası');
+                }
+                const sonuc = await res.json();
+                mevcutKayitlar = sonuc.kayitlar || [];
+                siraliKayitlar = [...mevcutKayitlar];
+                siralaAlani = null;
+                siralaTersi = false;
+                gorunenSayfa = 1;
+                sonuclariGoster(sonuc);
+            } catch (err) {
+                showError('Hata: ' + err.message);
+            } finally {
+                btnSorgula.classList.remove('loading');
+                btnSorgula.disabled = false;
+                loadingOverlay.classList.remove('active');
+            }
+        }
+
+        function showError(msg) {
+            hataMesaji.textContent = msg;
+            hataMesaji.classList.add('active');
+        }
+
+        function sonuclariGoster(sonuc) {
+            const kayitlar = sonuc.kayitlar || [];
+            const toplam = sonuc.toplam || 0;
+
+            if (kayitlar.length === 0) {
+                sonucContainer.classList.add('active');
+                statsGrid.innerHTML = '';
+                sonucBaslik.textContent = '📦 Sorgu Sonuçları';
+                sonucBadge.textContent = '0 kayıt';
+                sonucBadge.className = 'sonuc-badge warning';
+                const sorguAdi = sonuc.sorgu?.urun_adi || '';
+                const sorguUlke = sonuc.sorgu?.mensei_ulke || '';
+                let mesaj = '❓ Kayıt bulunamadı.';
+                if (sorguAdi && sorguUlke) mesaj = '❓ <strong>' + sorguAdi + '</strong> / <strong>' + sorguUlke + '</strong> için kayıt bulunamadı.';
+                else if (sorguAdi) mesaj = '❓ <strong>' + sorguAdi + '</strong> ürünü için kayıt bulunamadı.';
+                else if (sorguUlke) mesaj = '❓ <strong>' + sorguUlke + '</strong> ülkesi için kayıt bulunamadı.';
+                sonucOzet.innerHTML = '<span>' + mesaj + '</span>';
+                tabloGovdesi.innerHTML = '<tr><td colspan="7"><div class="bos-sonuc"><div class="bos-icon">📭</div><p>Aramanızla eşleşen kayıt bulunamadı.</p></div></td></tr>';
+                tabloBilgi.textContent = 'Toplam: 0 kayıt';
+                return;
+            }
+
+            // İstatistikler
+            const redSayisi = kayitlar.filter(k => k.red_mi).length;
+            const uygunSayisi = kayitlar.filter(k => !k.red_mi).length;
+            const kategoriler = [...new Set(kayitlar.map(k => k.kategori_ad))];
+
+            statsGrid.innerHTML = `
+                <div class="stat-card ${redSayisi > 0 ? 'danger' : 'success'} clickable-red" data-filtre="red" title="Sadece red/uygunsuz kayıtları göster">
+                    <div class="stat-value">${redSayisi}</div>
+                    <div class="stat-label">Red/Uygunsuz</div>
+                </div>
+                <div class="stat-card success clickable-green" data-filtre="uygun" title="Sadece uygun kayıtları göster">
+                    <div class="stat-value">${uygunSayisi}</div>
+                    <div class="stat-label">Uygun Kayıt</div>
+                </div>
+                <div class="stat-card clickable-blue" data-filtre="tum" title="Tüm kayıtları göster">
+                    <div class="stat-value">${toplam}</div>
+                    <div class="stat-label">Toplam Kayıt</div>
+                </div>
+                <div class="stat-card warning no-click" title="Kategori sayısı">
+                    <div class="stat-value">${kategoriler.length}</div>
+                    <div class="stat-label">Kategori</div>
+                </div>
+            `;
+
+            // İstatistik kartlarına tıklama olayı ekle
+            document.querySelectorAll('.stat-card[data-filtre]').forEach(kart => {
+                kart.addEventListener('click', () => {
+                    const filtre = kart.dataset.filtre;
+                    aktifFiltre = filtre;
+                    filtreleVeGoster(filtre);
+                });
+            });
+
+            // Başlık ve badge
+            sonucBaslik.textContent = '📦 Sorgu: ' + (sonuc.sorgu?.urun_adi || '');
+            sonucBadge.textContent = toplam + ' kayıt bulundu';
+            sonucBadge.className = 'sonuc-badge ' + (redSayisi > 0 ? 'danger' : 'success');
+
+            // Özet
+            const ulkeBilgi = sonuc.sorgu?.mensei_ulke ? ' | Ülke: ' + sonuc.sorgu.mensei_ulke : '';
+            sonucOzet.innerHTML = `
+                <span>📌 <strong>${sonuc.sorgu?.urun_adi || ''}</strong>${ulkeBilgi}</span>
+                <span>🔴 ${redSayisi} uygunsuzluk</span>
+                <span>🟢 ${uygunSayisi} uygun</span>
+                <span>📂 ${kategoriler.join(', ')}</span>
+            `;
+
+            // Tabloyu doldur
+            siraliKayitlar = [...kayitlar];
+            siralaAlani = null;
+            siralaTersi = false;
+            gorunenSayfa = 1;
+            aktifFiltre = null;
+            tabloyuDoldur();
+            sonucContainer.classList.add('active');
+            sonucContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function filtreleVeGoster(filtre) {
+            let filtrelenmis = [...mevcutKayitlar];
+            if (filtre === 'red') {
+                filtrelenmis = filtrelenmis.filter(k => k.red_mi);
+            } else if (filtre === 'uygun') {
+                filtrelenmis = filtrelenmis.filter(k => !k.red_mi);
+            }
+            // 'tum' ise tümünü göster
+
+            siraliKayitlar = filtrelenmis;
+            siralaAlani = null;
+            siralaTersi = false;
+            gorunenSayfa = 1;
+
+            // İstatistik kartlarını güncelle
+            const filtrelenmisRed = filtrelenmis.filter(k => k.red_mi).length;
+            const filtrelenmisUygun = filtrelenmis.filter(k => !k.red_mi).length;
+            const toplamFiltrelenmis = filtrelenmis.length;
+
+            // Badge'i güncelle
+            const filtreAdlari = { 'red': 'Red/Uygunsuz', 'uygun': 'Uygun Kayıt', 'tum': 'Tüm Kayıtlar' };
+            sonucBadge.textContent = toplamFiltrelenmis + ' kayıt (' + (filtreAdlari[filtre] || 'Tümü') + ')';
+
+            // Tabloyu yeniden doldur
+            tabloyuDoldur();
+            sonucContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function tabloyuDoldur() {
+            const bas = 0;
+            const son = siraliKayitlar.length;
+            const sayfaKayitlar = siraliKayitlar.slice(bas, son);
+
+            if (sayfaKayitlar.length === 0) {
+                tabloGovdesi.innerHTML = '<tr><td colspan="7"><div class="bos-sonuc"><div class="bos-icon">📭</div><p>Gösterilecek kayıt yok.</p></div></td></tr>';
+                tabloBilgi.textContent = 'Toplam: 0 kayıt';
+                return;
+            }
+
+            let html = '';
+            for (const k of sayfaKayitlar) {
+                const rowClass = k.red_mi ? 'red' : 'uygun';
+                const kararTag = k.red_mi
+                    ? '<span class="tag tag-red">🔴 RED</span>'
+                    : '<span class="tag tag-yesil">🟢 UYGUN</span>';
+
+                // Kategori rengi
+                let katRenk = 'tag-mavi';
+                if (k.kategori_kod === 'ihracat') katRenk = 'tag-sari';
+                else if (k.kategori_kod === 'transit') katRenk = 'tag-mavi';
+                else if (k.kategori_kod === 'gemi') katRenk = 'tag-sari';
+                else if (k.kategori_kod === 'serbest') katRenk = 'tag-yesil';
+
+                html += '<tr class="' + rowClass + '">';
+                html += '<td><strong>' + escHtml(k.urun) + '</strong></td>';
+                html += '<td>' + escHtml(k.tarih) + '</td>';
+                html += '<td>' + escHtml(k.sebep) + '</td>';
+                html += '<td>' + kararTag + ' ' + escHtml(k.karar) + '</td>';
+                html += '<td>' + escHtml(k.ulke) + '</td>';
+                html += '<td>' + escHtml(k.kurum) + '</td>';
+                html += '<td><span class="kategori-badge ' + katRenk + '">' + escHtml(k.kategori_ad) + '</span></td>';
+                html += '</tr>';
+            }
+
+            tabloGovdesi.innerHTML = html;
+            tabloBilgi.textContent = 'Gösterilen: ' + siraliKayitlar.length + ' / Toplam: ' + mevcutKayitlar.length + ' kayıt';
+        }
+
+        function escHtml(str) {
+            if (!str) return '-';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Sayfa yüklendiğinde son güncelleme tarihini getir
+        async function guncellemeTarihiniGetir() {
+            try {
+                const res = await fetch('/api/son-guncelleme');
+                if (res.ok) {
+                    const data = await res.json();
+                    const el = document.getElementById('headerGuncelleme');
+                    if (data.tarih) {
+                        el.textContent = '📅 Son güncelleme: ' + data.tarih + ' | Toplam ' + data.toplam + ' kayıt';
+                    } else {
+                        el.textContent = '📅 ' + data.toplam + ' kayıt yüklendi';
+                    }
+                }
+            } catch (e) {
+                console.log('Güncelleme tarihi alınamadı');
+            }
+        }
+        guncellemeTarihiniGetir();
+
+        // Tablo başlıklarına sıralama
+        document.querySelectorAll('.sonuc-tablo th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const alan = th.dataset.sort;
+                if (siralaAlani === alan) {
+                    siralaTersi = !siralaTersi;
+                } else {
+                    siralaAlani = alan;
+                    siralaTersi = false;
+                }
+                siraliKayitlar.sort((a, b) => {
+                    let va = (a[alan] || '').toUpperCase();
+                    let vb = (b[alan] || '').toUpperCase();
+                    if (alan === 'red_mi') {
+                        va = a.red_mi ? 1 : 0;
+                        vb = b.red_mi ? 1 : 0;
+                    }
+                    if (va < vb) return siralaTersi ? 1 : -1;
+                    if (va > vb) return siralaTersi ? -1 : 1;
+                    return 0;
+                });
+                // Red'ler önce gösterilsin
+                if (!siralaAlani) {
+                    siraliKayitlar.sort((a, b) => (b.red_mi ? 1 : 0) - (a.red_mi ? 1 : 0));
+                }
+                tabloyuDoldur();
+            });
+        });
+    </script>
+</body>
+</html>
