@@ -35,7 +35,7 @@ def kategori_belirle(kaynak):
     if "GEMI" in sekme or "KUMANYA" in sekme:
         return ("gemi", "Gemi Kumanyası")
     if "SERBEST" in dosya or "SERBEST" in sekme:
-        return ("serbest", "Serbest Dolaşım")
+        return ("serbest", "İthalat")  # Değişiklik 2: Serbest Dolaşım -> İthalat
     return ("diger", sekme if sekme else dosya)
 
 def kelime_eslesme(aranan, urun_adi):
@@ -74,20 +74,24 @@ def excel_oku():
                 rows = list(ws.iter_rows(values_only=True))
                 if len(rows) < 2: continue
                 s_norm = normalize(sekme)
+                # Varsayılan indeksler (SERBEST DOLAŞIM, TRANSİT, GEMİ KUMANYASI için)
                 urun_idx = 8; sebep_idx = 12; karar_idx = 13; ulke_idx = 4
                 tarih_idx = 3; kurum_idx = 2; red_sebep_idx = None
+
                 if "IHRACATTAN" in s_norm or "GERI DONEN" in s_norm:
-                    urun_idx = 10; sebep_idx = 16; karar_idx = 19; ulke_idx = 4
-                    tarih_idx = 3; kurum_idx = 2; red_sebep_idx = 22
+                    # İhracattan Geri Dönen: farklı sütun yapısı
+                    urun_idx = 10; sebep_idx = 16; karar_idx = 20; ulke_idx = 4
+                    tarih_idx = 3; kurum_idx = 2; red_sebep_idx = 21
                 elif "TRANSIT" in s_norm:
                     urun_idx = 8; sebep_idx = 12; karar_idx = 13; ulke_idx = 4
                     tarih_idx = 3; kurum_idx = 2
                 elif "GEMI" in s_norm or "KUMANYA" in s_norm:
                     urun_idx = 8; sebep_idx = 12; karar_idx = 13; ulke_idx = 4
                     tarih_idx = 3; kurum_idx = 2
-                elif "serbest" in f.name.lower():
+                elif "SERBEST" in s_norm:
                     urun_idx = 8; sebep_idx = 12; karar_idx = 13; ulke_idx = 4
                     tarih_idx = 3; kurum_idx = 2
+
                 baslik = rows[1]
                 for j, v in enumerate(baslik):
                     if v is None: continue
@@ -96,11 +100,12 @@ def excel_oku():
                     if "UYGUNSUZLUKSEBEBI" in vs: sebep_idx = j
                     if "GERIDONUSSEBEBI" in vs: sebep_idx = j
                     if vs == "KARAR": karar_idx = j
-                    if "KONTROLSONUCU" in vs: karar_idx = j
+                    if "KONTROLSONUCU" in vs and ("UYGUN" in vs or "RED" in vs): karar_idx = j
                     if ("ULKE" in vs) and ("GONDERICI" in vs or "ITHALATCI" in vs or "GONDEREN" in vs): ulke_idx = j
                     if "BILDIRIMTARIHI" in vs: tarih_idx = j
                     if "BILDIRIMIYAPANKURUM" in vs or "BILDIRIMIYAPAN" in vs: kurum_idx = j
-                    if "REDDEDILENSEVKIYAT" in vs: red_sebep_idx = j
+                    if "REDDEDILMESEBEBI" in vs or "REDDEDILENSEVKIYAT" in vs: red_sebep_idx = j
+
                 for row in rows[2:]:
                     if not row or all(v is None for v in row): continue
                     urun = h(row[urun_idx]) if urun_idx < len(row) else ""
@@ -112,10 +117,21 @@ def excel_oku():
                     red_sebep = h(row[red_sebep_idx]) if red_sebep_idx is not None and red_sebep_idx < len(row) else ""
                     kaynak = f.name + "/" + sekme
                     if urun and urun != "None":
-                        red_kel = ["RED","MAHRECE IADE","IMHA","ULKEYE GIRIS","IZIN VERILMEMIS","UYGUN DEGIL"]
-                        kr = normalize(karar)
-                        is_red = any(r in kr for r in red_kel) if karar else False
                         kat_kod, kat_ad = kategori_belirle(kaynak)
+                        kr = normalize(karar)
+
+                        # Değişiklik 3: Sadece İhracattan Geri Dönen için red/uygun kontrolü
+                        if kat_kod == "ihracat":
+                            red_kel = ["RED","MAHRECE IADE","IMHA","ULKEYE GIRIS","IZIN VERILMEMIS","UYGUN DEGIL"]
+                            is_red = any(r in kr for r in red_kel) if karar else True
+                            # Karar sütununda "UYGUN" varsa uygun kabul et
+                            if "UYGUN" in kr and "DEGIL" not in kr and "UYGUNSUZ" not in kr:
+                                is_red = False
+                        else:
+                            # Diğer kategorilerde (İthalat, Transit, Gemi Kumanyası) red/uygun ayrımı yok
+                            # Hepsi uygunsuzluk kaydı olarak işaretlenir
+                            is_red = True
+
                         kayitlar.append({
                             "urun": urun,
                             "urun_norm": normalize(urun),

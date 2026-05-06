@@ -653,9 +653,13 @@
             let html = '';
             for (const k of sayfaKayitlar) {
                 const rowClass = k.red_mi ? 'red' : 'uygun';
-                const kararTag = k.red_mi
-                    ? '<span class="tag tag-red">🔴 RED</span>'
-                    : '<span class="tag tag-yesil">🟢 UYGUN</span>';
+                // Sadece İhracattan Geri Dönen için karar etiketi göster
+                let kararTag = '';
+                if (k.kategori_kod === 'ihracat') {
+                    kararTag = k.red_mi
+                        ? '<span class="tag tag-red">🔴 RED</span> '
+                        : '<span class="tag tag-yesil">🟢 UYGUN</span> ';
+                }
 
                 // Kategori rengi
                 let katRenk = 'tag-mavi';
@@ -668,7 +672,7 @@
                 html += '<td><strong>' + escHtml(k.urun) + '</strong></td>';
                 html += '<td>' + escHtml(k.tarih) + '</td>';
                 html += '<td>' + escHtml(k.sebep) + '</td>';
-                html += '<td>' + kararTag + ' ' + escHtml(k.karar) + '</td>';
+                html += '<td>' + kararTag + escHtml(k.karar) + '</td>';
                 html += '<td>' + escHtml(k.ulke) + '</td>';
                 html += '<td>' + escHtml(k.kurum) + '</td>';
                 html += '<td><span class="kategori-badge ' + katRenk + '">' + escHtml(k.kategori_ad) + '</span></td>';
