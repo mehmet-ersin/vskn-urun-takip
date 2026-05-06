@@ -3,37 +3,60 @@
 ## 🎯 Amaç
 Veteriner Sınır Kontrol Noktası'nda işlenen uygunsuzluk kayıtlarını (Excel'den okunan) sorgulamak için web uygulaması.
 
+## 🌐 Canlı
+**https://vskn-urun-takipp.onrender.com**
+
 ## 📂 Proje Yapısı
 ```
 yeni proje/
 ├── server.py              # Flask backend (API)
 ├── public/
-│   ├── index.html          # Frontend (güncellenmiş, logo entegre)
-│   └── logo1.png           # Logo resmi
+│   ├── index.html         # Frontend (arayüz, logo, bayrak)
+│   ├── logo1.png          # VSKN Logosu
+│   └── bayrak-ve-ataturk.png
 ├── veriler/
-│   ├── UYGUNSUZLUK VE GERİ DÖNEN ÜRÜN TAKİP2.xlsx
-│   └── serbest dolaşım uygunsuzluk.xlsx
-├── package.json
-└── README.md               # Bu dosya
+│   └── UYGUNSUZLUK VE GERİ DÖNEN ÜRÜN TAKİP.xlsx  # 1853 kayıt
+├── requirements.txt       # Flask, openpyxl, gunicorn, flask-cors
+├── UYGUNSUZLUK VE GERİ DÖNEN ÜRÜN TAKİP(1).xlsx  # Ana kaynak Excel
+└── README.md
 ```
 
-## 🚀 Çalıştırma
+## 🚀 Yerelde Çalıştırma
 ```bash
 cd "/home/mehmet-ersin/Belgeler/yeni proje"
 python3 server.py
 ```
-Sunucu: http://127.0.0.1:5000 (ve ağdan http://192.168.0.69:5000)
+Sunucu: http://127.0.0.1:5000
 
-## ✅ Yapılanlar
-- [x] server.py — 1762 kayıt yüklü, API endpoint'leri: `/api/sorgula`, `/api/kayitlar`
-- [x] index.html — mevcut API'ye tam uyumlu, tablo görünümü, sıralama, istatistik kartları
-- [x] Logo entegrasyonu — `logo1.png` header'da gösteriliyor
-- [x] Excel dosyaları mevcut ve okunuyor
-- [x] Çift içerik sorunu temizlendi (index.html ve server.py tek versiyon)
+## 📊 Veri
+- **1853 kayıt** (4 sayfa)
+- Kategoriler: **İthalat**, **İhracattan Geri Dönen Ürün**, **Transit**, **Gemi Kumanyası**
 
-## 📌 Yapılacaklar / Potansiyel Geliştirmeler
-- GTIP/barkod sorgulama eklenebilir
-- Firma bilgisi sorgulama eklenebilir
-- Tarih filtresi eklenebilir
-- Sayfalama (şu an 200 kayıt limiti var, sayfalama yapılabilir)
-- PDF/Excel rapor çıktısı eklenebilir
+## 🔧 Önemli Değişiklikler (Mayıs 2026)
+- [x] Yeni Excel eklendi (1853 kayıt, eski Exceller silindi)
+- [x] "Serbest Dolaşım" → **"İthalat"** olarak değiştirildi
+- [x] RED/UYGUN karar etiketleri **sadece İhracattan Geri Dönen**'de gösteriliyor
+- [x] Render uyumluluğu (PORT env, debug kapalı, gunicorn)
+- [x] GitHub: https://github.com/mehmet-ersin/vskn-urun-takip
+
+## 🔄 Güncelleme (GitHub → Render)
+```bash
+git add -A
+git commit -m "yapılan değişiklik"
+git push origin main
+```
+Render Dashboard → Manual Deploy → Deploy latest commit
+
+## 📌 Potansiyel Geliştirmeler
+- GTIP/barkod sorgulama
+- Firma bilgisi sorgulama
+- Tarih filtresi
+- Sayfalama (şu an 200 kayıt limiti)
+- PDF/Excel rapor çıktısı
+
+## 📜 API
+| Endpoint | Method | Açıklama |
+|----------|--------|----------|
+| `/api/sorgula` | POST | Ürün adı ve ülkeye göre sorgulama |
+| `/api/kayitlar` | GET | İlk 100 kaydı getirir |
+| `/api/son-guncelleme` | GET | Toplam kayıt ve son güncelleme tarihi |
